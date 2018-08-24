@@ -1,0 +1,38 @@
+#!/sbin/sh
+OUTFD=/proc/self/fd/$2;
+ZIPFILE="$3";
+CACHE=/tmp/LibXZR
+ui_print() {
+  until [ ! "$1" ]; do
+    echo -e "ui_print $1\nui_print" > $OUTFD;
+    shift;
+  done;
+}
+
+ui_print " "
+ui_print " "
+ui_print "======Fingerprint fix flashable zip by @xzr467706992====="
+ui_print "=========Thanks @MRHACKER5476 for his fp hal========"
+ui_print " "
+ui_print " "
+ui_print "Mounting /vendor"
+mkdir /vendor
+umount /vendor
+mount -t ext4 -o rw /dev/block/bootdevice/by-name/vendor /vendor
+ui_print " "
+ui_print "Applying patch..."
+mkdir $CACHE
+cd $CACHE
+unzip -o "$ZIPFILE";
+cp -f $CACHE/patch/android.hardware.biometrics.fingerprint@2.0-service.zuk /vendor/bin/hw
+chmod 755 /vendor/bin/hw/android.hardware.biometrics.fingerprint@2.0-service.zuk
+cp -f $CACHE/patch/android.hardware.biometrics.fingerprint@2.0-service.zuk.rc /vendor/etc/init
+chmod 644 /vendor/etc/init/android.hardware.biometrics.fingerprint@2.0-service.zuk.rc
+ui_print " "
+ui_print "Removing old hal..."
+rm -f /vendor/etc/init/android.hardware.biometrics.fingerprint@2.1-service.rc
+rm -f /vendor/bin/hw/android.hardware.biometrics.fingerprint@2.1-service
+ui_print " "
+umount /vendor
+rm -rf $CACHE
+ui_print "Done..."
